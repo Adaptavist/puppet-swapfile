@@ -42,8 +42,8 @@ class swapfile(
 
     if str2bool($swapon) {
         exec { 'Create swap file':
-            command     => "/bin/dd if=/dev/zero of=${swapfile_path} bs=1M count=${swapfile_size}",
-            creates     => $swapfile_path,
+            command => "/bin/dd if=/dev/zero of=${swapfile_path} bs=1M count=${swapfile_size}",
+            creates => $swapfile_path,
         }
 
         exec { 'Attach swap file':
