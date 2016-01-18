@@ -1,4 +1,5 @@
 # Swap File Module
+[![Build Status](https://travis-ci.org/Adaptavist/puppet-swapfile.svg?branch=master)](https://travis-ci.org/Adaptavist/puppet-swapfile)
 
 ## Overview
 
