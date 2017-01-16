@@ -1,5 +1,5 @@
 name 'adaptavist-swapfile'
-version '0.1.6'
+version '1.0.0'
 source 'https://github.com/Adaptavist/puppet-swapfile.git'
 author 'adaptavist'
 summary 'Puppet module for swap files' 
