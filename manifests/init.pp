@@ -12,9 +12,10 @@
 #  This keeps performance reasonable while avoiding I/O charges on EBS.
 # [*swapfile_size*]
 #  Size of the swapfile in MB. Defaults to 1024MB
-#
-# Todo:
-#   Manage /etc/fstab
+# [*perm_mount*]
+#  Set to false to disable perm mount. Default is on (true)
+# [*mount_options*]
+#  Mount options. Defaults to 'defaults'
 #
 # Actions:
 #   Creates and mounts a swapfile.
@@ -38,6 +39,8 @@ class swapfile(
     $swapon           = $swapfile::params::swapon,
     $swapfile_path    = $swapfile::params::swapfile_path,
     $swapfile_size    = $swapfile::params::swapfile_size,
+    $perm_mount       = $swapfile::params::perm_mount,
+    $mount_options    = $swapfile::params::mount_options,
 ) inherits swapfile::params {
 
     if str2bool($swapon) {
@@ -51,6 +54,16 @@ class swapfile(
             require => Exec['Create swap file'],
             unless  => "/sbin/swapon -s | grep ${swapfile_path}",
         }
+
+        $mount_require = 'Exec[Attach swap file]'
+
+        # work out if the swapfile should be mounted or not
+        if str2bool($perm_mount) {
+            $mount_ensure = 'present'
+        }
+        else {
+            $mount_ensure = 'absent'
+        }
     }
     else {
         exec { 'Detach swap file':
@@ -62,5 +75,19 @@ class swapfile(
             ensure  => absent,
             require => Exec['Detach swap file'],
         }
+
+        $mount_require = 'Exec[Detach swap file]'
+        $mount_ensure = 'absent'
+    }
+
+    # deal with mounting the swap file via fstab
+    mount { $swapfile_path:
+        ensure  => $mount_ensure,
+        fstype  => swap,
+        device  => $swapfile_path,
+        options => $mount_options,
+        dump    => 0,
+        pass    => 0,
+        require => $mount_require,
     }
 }
