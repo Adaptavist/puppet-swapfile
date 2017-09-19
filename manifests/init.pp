@@ -55,26 +55,14 @@ class swapfile(
             unless  => "/sbin/swapon -s | grep ${swapfile_path}",
         }
 
+        $mount_require = 'Exec[Attach swap file]'
+
+        # work out if the swapfile should be mounted or not
         if str2bool($perm_mount) {
-            mount { $swapfile_path:
-                ensure  => present,
-                fstype  => swap,
-                device  => $swapfile_path,
-                options => $mount_options,
-                dump    => 0,
-                pass    => 0,
-                require => Exec['Attach swap file'],
-            }
-        } 
+            $mount_ensure = 'present'
+        }
         else {
-            mount { $swapfile_path:
-                ensure  => absent,
-                fstype  => swap,
-                device  => $swapfile_path,
-                options => $mount_options,
-                dump    => 0,
-                pass    => 0,
-            }            
+            $mount_ensure = 'absent'
         }
     }
     else {
@@ -87,14 +75,19 @@ class swapfile(
             ensure  => absent,
             require => Exec['Detach swap file'],
         }
-        
-        mount { $swapfile_path:
-            ensure  => absent,
-            fstype  => swap,
-            device  => $swapfile_path,
-            options => $mount_options,
-            dump    => 0,
-            pass    => 0,
-        }
+
+        $mount_require = 'Exec[Detach swap file]'
+        $mount_ensure = 'absent'
+    }
+
+    # deal with mounting the swap file via fstab
+    mount { $swapfile_path:
+        ensure  => $mount_ensure,
+        fstype  => swap,
+        device  => $swapfile_path,
+        options => $mount_options,
+        dump    => 0,
+        pass    => 0,
+        require => $mount_require,
     }
 }

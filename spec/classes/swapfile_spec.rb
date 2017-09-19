@@ -7,6 +7,8 @@ require 'spec_helper'
   cust_swapfile_path = '/mnt/swap.2'
   cust_swapfile_size = '2048'
 
+  mount_options = 'defaults'
+
 describe 'swapfile', :type => 'class' do
     
   context "Should create and attach swap file by default" do
@@ -58,4 +60,68 @@ describe 'swapfile', :type => 'class' do
       )
     end
   end
+
+  context "Should ensure swapfile is present in fstab when swapped on" do
+    let(:params){{ 
+      :swapon => swapon,
+      :swapfile_path => cust_swapfile_path,
+      :swapfile_size => cust_swapfile_size,
+      :perm_mount => true,
+      :mount_options => mount_options,
+       }}
+    it do
+      should contain_mount(cust_swapfile_path).with(
+            'ensure'  => 'present',
+            'fstype'  => 'swap',
+            'device'  => cust_swapfile_path,
+            'options' => mount_options,
+            'dump'    => '0',
+            'pass'    => '0',
+            'require' => 'Exec[Attach swap file]',
+      )
+    end
+  end
+
+  context "Should ensure swapfile is not present in fstab when swapped on" do
+    let(:params){{ 
+      :swapon => swapon,
+      :swapfile_path => cust_swapfile_path,
+      :swapfile_size => cust_swapfile_size,
+      :perm_mount => false,
+      :mount_options => mount_options,
+       }}
+    it do
+      should contain_mount(cust_swapfile_path).with(
+            'ensure'  => 'absent',
+            'fstype'  => 'swap',
+            'device'  => cust_swapfile_path,
+            'options' => mount_options,
+            'dump'    => '0',
+            'pass'    => '0',
+            'require' => 'Exec[Attach swap file]',
+      )
+    end
+  end
+
+  context "Should ensure swapfile is not present in fstab when swapped off" do
+    let(:params){{ 
+      :swapon => false,
+      :swapfile_path => cust_swapfile_path,
+      :swapfile_size => cust_swapfile_size,
+      :perm_mount => true,
+      :mount_options => mount_options,
+       }}
+    it do
+      should contain_mount(cust_swapfile_path).with(
+            'ensure'  => 'absent',
+            'fstype'  => 'swap',
+            'device'  => cust_swapfile_path,
+            'options' => mount_options,
+            'dump'    => '0',
+            'pass'    => '0',
+            'require' => 'Exec[Detach swap file]',
+      )
+    end
+  end
+
 end
