@@ -23,6 +23,12 @@ describe 'swapfile', :type => 'class' do
             'require' => 'Exec[Create swap file]',
             'unless'  => "/sbin/swapon -s | grep #{swapfile_path}",
       )
+
+      should contain_file(swapfile_path).with(
+            'mode'  => '0600',
+            'owner' => 'root',
+            'group' => 'root',
+      )
     end
   end
 
@@ -51,6 +57,12 @@ describe 'swapfile', :type => 'class' do
       should contain_exec('Create swap file').with(
             'command'     => "/bin/dd if=/dev/zero of=#{cust_swapfile_path} bs=1M count=#{cust_swapfile_size}",
             'creates'     => cust_swapfile_path,
+      )
+
+      should contain_file(cust_swapfile_path).with(
+            'mode'  => '0600',
+            'owner' => 'root',
+            'group' => 'root',
       )
 
       should contain_exec('Attach swap file').with(
