@@ -48,6 +48,12 @@ class swapfile(
             command => "/bin/dd if=/dev/zero of=${swapfile_path} bs=1M count=${swapfile_size}",
             creates => $swapfile_path,
         }
+        -> file { $swapfile_path:
+            ensure => 'file',
+            mode   => '0600',
+            owner  => 'root',
+            group  => 'root',
+        }
 
         exec { 'Attach swap file':
             command => "/sbin/mkswap ${swapfile_path} && /sbin/swapon ${swapfile_path}",
