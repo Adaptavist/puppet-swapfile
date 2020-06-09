@@ -5,8 +5,9 @@ group :rake do
   gem 'puppet-syntax', '>= 2.1.1'
   gem 'rspec-puppet'
   gem 'rspec-puppet-facts'
-  gem 'rake', '< 11.0'
+  gem 'rake', '>=12.3.3'
   gem 'puppetlabs_spec_helper'
   gem 'puppet-lint'
   gem 'rspec_junit_formatter'
 end
+

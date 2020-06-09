@@ -2,5 +2,7 @@ fixtures:
   repositories:
     stdlib:
       repo: "https://github.com/Adaptavist/puppet-stdlib"
+    mount_core:
+      repo: "https://github.com/Adaptavist/puppetlabs-mount_core"
   symlinks:
     swapfile: "#{source_dir}"
