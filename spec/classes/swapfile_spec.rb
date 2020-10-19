@@ -42,6 +42,7 @@ describe 'swapfile', :type => 'class' do
 
       should contain_file(swapfile_path).with(
             'ensure'  => 'absent',
+            'backup'  => false,
             'require' => 'Exec[Detach swap file]',
       )
     end
