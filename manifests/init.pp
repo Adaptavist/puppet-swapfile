@@ -53,6 +53,7 @@ class swapfile(
             mode   => '0600',
             owner  => 'root',
             group  => 'root',
+            backup => false,
         }
 
         exec { 'Attach swap file':
@@ -79,6 +80,7 @@ class swapfile(
 
         file { $swapfile_path:
             ensure  => absent,
+            backup  => false,
             require => Exec['Detach swap file'],
         }
 
